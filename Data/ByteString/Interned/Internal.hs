@@ -7,11 +7,12 @@ module Data.ByteString.Interned.Internal where
 import Data.ByteString (ByteString)
 import Data.IORef (newIORef,IORef,readIORef,atomicWriteIORef,atomicModifyIORef')
 import System.IO.Unsafe (unsafePerformIO,unsafeDupablePerformIO)
+import qualified Data.ByteString.Short as S
 
--- #if __GLASGOW_HASKELL__ >= 821
+#if __GLASGOW_HASKELL__ >= 802
 -- #if MIN_VERSION_base (4,10,0)
--- import Data.Compact
--- #endif
+import Data.Compact
+#endif
 
 import Data.Bijection.HashMap
 import Data.Bijection.Vector
@@ -21,18 +22,18 @@ import Data.Bijection.Vector
 -- In case we have a modern-enough GHC, all interning happens within
 -- a compact region.
 
--- #if MIN_VERSION_base (4,10,0)
--- type InternedBimap = Compact (Bimap (HashMap ByteString Int) (Vector ByteString))
--- #else
+#if __GLASGOW_HASKELL__ >= 802
+type InternedBimap = Compact (Bimap (HashMap S.ShortByteString Int) (Vector S.ShortByteString))
+#else
 type InternedBimap = Bimap (HashMap ByteString Int) (Vector ByteString)
--- #endif
+#endif
 
 ibsBimap ∷ IORef InternedBimap
--- #if MIN_VERSION_base (4,10,0)
--- ibsBimap = unsafePerformIO $ newIORef =<< compact empty
--- #else
+#if __GLASGOW_HASKELL__ >= 802
+ibsBimap = unsafePerformIO $ newIORef =<< compact empty
+#else
 ibsBimap = unsafePerformIO $ newIORef empty
--- #endif
+#endif
 {-# NoInline ibsBimap #-}
 
 -- | Add @UTF8 ByteString@ and return @Int@ key. Will return key for
@@ -40,36 +41,37 @@ ibsBimap = unsafePerformIO $ newIORef empty
 -- direction.
 
 ibsBimapAdd ∷ ByteString → Int
--- #if MIN_VERSION_base (4,10,0)
--- ibsBimapAdd !k = seq k . unsafeDupablePerformIO . atomicModifyIORef' ibsBimap $ updateCompact
---   where
---     updateCompact ∷ InternedBimap → (InternedBimap, Int)
---     updateCompact cmpct = unsafeDupablePerformIO $ do
---       let m = getCompact cmpct
---       case lookupL m k of
---         Just i  → return (cmpct, i)
---         Nothing → let s = size m
---                   in  (,s) <$> compact (insert m (k,s))
--- #else
+#if __GLASGOW_HASKELL__ >= 802
+ibsBimapAdd !k = seq k . unsafeDupablePerformIO . atomicModifyIORef' ibsBimap $ updateCompact
+  where
+    updateCompact ∷ InternedBimap → (InternedBimap, Int)
+    updateCompact cmpct = unsafeDupablePerformIO $ do
+      let m = getCompact cmpct
+          q = S.toShort k
+      case lookupL m q of
+        Just i  → return (cmpct, i)
+        Nothing → let s = size m
+                  in  (,s) <$> compact (insert m (q,s))
+#else
 ibsBimapAdd k = seq k . unsafeDupablePerformIO . atomicModifyIORef' ibsBimap $ go
   where
     go m = case lookupL m k of
              Just i  -> (m,i)
              Nothing -> let s = size m
                         in  (insert m (k,s) , s)
--- #endif
+#endif
 {-# Inline ibsBimapAdd #-}
 
 -- | Lookup based on an @Int@ key. Unsafe totality assumption.
 
 ibsBimapLookupInt ∷ Int → ByteString
 ibsBimapLookupInt r = seq r . unsafeDupablePerformIO $ go <$> readIORef ibsBimap
--- #if MIN_VERSION_base (4,10,0)
---   where go cmpct = case lookupR (getCompact cmpct) r of
--- #else
+#if __GLASGOW_HASKELL__ >= 802
+  where go cmpct = case lookupR (getCompact cmpct) r of
+#else
   where go m = case (m `seq` lookupR m r) of
--- #endif
-                 Just l  -> l
+#endif
+                 Just l  -> S.fromShort l
                  Nothing -> error "btiBimapLookupInt: totality assumption invalidated"
 {-# Inline ibsBimapLookupInt #-}
 
