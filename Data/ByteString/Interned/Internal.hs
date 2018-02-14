@@ -9,7 +9,7 @@ import Data.IORef (newIORef,IORef,readIORef,atomicWriteIORef,atomicModifyIORef')
 import System.IO.Unsafe (unsafePerformIO,unsafeDupablePerformIO)
 import qualified Data.ByteString.Short as S
 
-#if __GLASGOW_HASKELL__ >= 802
+#if __GLASGOW_HASKELL__ >= 123802
 -- #if MIN_VERSION_base (4,10,0)
 import Data.Compact
 #endif
@@ -22,14 +22,14 @@ import Data.Bijection.Vector
 -- In case we have a modern-enough GHC, all interning happens within
 -- a compact region.
 
-#if __GLASGOW_HASKELL__ >= 802
+#if __GLASGOW_HASKELL__ >= 123802
 type InternedBimap = Compact (Bimap (HashMap S.ShortByteString Int) (Vector S.ShortByteString))
 #else
 type InternedBimap = Bimap (HashMap ByteString Int) (Vector ByteString)
 #endif
 
 ibsBimap ∷ IORef InternedBimap
-#if __GLASGOW_HASKELL__ >= 802
+#if __GLASGOW_HASKELL__ >= 123802
 ibsBimap = unsafePerformIO $ newIORef =<< compact empty
 #else
 ibsBimap = unsafePerformIO $ newIORef empty
@@ -41,7 +41,7 @@ ibsBimap = unsafePerformIO $ newIORef empty
 -- direction.
 
 ibsBimapAdd ∷ ByteString → Int
-#if __GLASGOW_HASKELL__ >= 802
+#if __GLASGOW_HASKELL__ >= 123802
 ibsBimapAdd !k = seq k . unsafeDupablePerformIO . atomicModifyIORef' ibsBimap $ updateCompact
   where
     updateCompact ∷ InternedBimap → (InternedBimap, Int)
@@ -66,12 +66,13 @@ ibsBimapAdd k = seq k . unsafeDupablePerformIO . atomicModifyIORef' ibsBimap $ g
 
 ibsBimapLookupInt ∷ Int → ByteString
 ibsBimapLookupInt r = seq r . unsafeDupablePerformIO $ go <$> readIORef ibsBimap
-#if __GLASGOW_HASKELL__ >= 802
+#if __GLASGOW_HASKELL__ >= 123802
   where go cmpct = case lookupR (getCompact cmpct) r of
+                 Just l  -> S.fromShort l
 #else
   where go m = case (m `seq` lookupR m r) of
+                 Just l  -> l
 #endif
-                 Just l  -> S.fromShort l
                  Nothing -> error "btiBimapLookupInt: totality assumption invalidated"
 {-# Inline ibsBimapLookupInt #-}
 
