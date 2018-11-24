@@ -128,6 +128,8 @@ ibsIsoText ∷ Iso' (IBS k) Text
 ibsIsoText = iso ibsTo ibsFrom
 {-# Inline ibsIsoText #-}
 
+-- | Direct utf8 encoded bytestring.
+
 ibsIsoBS ∷ Iso' (IBS k) ByteString
 ibsIsoBS = iso ibsToUtf8 ibs
 {-# Inline ibsIsoBS #-}
