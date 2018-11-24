@@ -20,6 +20,7 @@ module Data.ByteString.Interned
 
 import           Control.Applicative
 import           Control.DeepSeq (NFData(..))
+import           Control.Lens
 import           Data.Aeson as A
 import           Data.Binary      as DB
 import           Data.ByteString (ByteString)
@@ -120,4 +121,14 @@ instance FromJSON (IBS k) where
 instance ToJSON (IBS k) where
   toJSON = toJSON . ibsToText
   {-# Inline toJSON #-}
+
+-- | isomorphism between the inner bytestring (utf8-encoded) and an outer text
+
+ibsIsoText ∷ Iso' (IBS k) Text
+ibsIsoText = iso ibsTo ibsFrom
+{-# Inline ibsIsoText #-}
+
+ibsIsoBS ∷ Iso' (IBS k) ByteString
+ibsIsoBS = iso ibsToUtf8 ibs
+{-# Inline ibsIsoBS #-}
 

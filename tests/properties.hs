@@ -1,7 +1,9 @@
 
 module Main where
 
+import           Control.Lens
 import           Data.String.Conversions
+import           Data.Text (Text)
 import           Debug.Trace
 import qualified Data.Aeson as A
 import qualified Data.Binary as B
@@ -45,6 +47,10 @@ prop_Aeson (t :: String) = Just [t] == (map ibsTo <$> j)
   where i ::       [IBS ()] = [ibsFrom t]
         j :: Maybe [IBS ()] = A.decode $ A.encode i
 
+prop_IsoText (s ∷ String) = t == ibs^.ibsIsoText
+  where t ∷ Text
+        t = cs s
+        ibs = t^.from ibsIsoText
 
 
 main :: IO ()
