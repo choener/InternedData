@@ -1,17 +1,17 @@
+cabal-version:  2.2
 name:           InternedData
 version:        0.0.0.1
-author:         Christian Hoener zu Siederdissen, 2017-2018
-copyright:      Christian Hoener zu Siederdissen, 2017-2018
+author:         Christian Hoener zu Siederdissen, 2017-2019
+copyright:      Christian Hoener zu Siederdissen, 2017-2019
 homepage:       https://github.com/choener/InternedData
 bug-reports:    https://github.com/choener/InternedData/issues
 maintainer:     choener@bioinf.uni-leipzig.de
 category:       Data, Data Structures, Natural Language Processing
-license:        BSD3
+license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
-cabal-version:  >= 1.10.0
-tested-with:    GHC == 8.4.3
+tested-with:    GHC == 8.4.4
 synopsis:       Data interning (with compact regions where possible)
 description:
                 Interned (UTF8) @ByteString@s where the interned structure is
@@ -27,7 +27,7 @@ Extra-Source-Files:
 
 
 
-library
+common deps
   build-depends: base               >= 4.7      &&  < 5.0
                , aeson              >= 0.8
                , binary             >= 0.7
@@ -46,10 +46,6 @@ library
                , bimaps             == 0.1.0.*
   if impl(ghc >= 8.2.0)
     build-depends: compact          >= 0.1.0.1
-  exposed-modules:
-    Data.ByteString.Interned
-    Data.ByteString.Interned.Internal
-
   default-extensions: BangPatterns
                     , CPP
                     , DataKinds
@@ -58,15 +54,26 @@ library
                     , MultiParamTypeClasses
                     , PolyKinds
                     , RankNTypes
+                    , ScopedTypeVariables
                     , TemplateHaskell
                     , TupleSections
                     , TypeFamilies
                     , UnicodeSyntax
   default-language:
     Haskell2010
-
   ghc-options:
     -O2 -funbox-strict-fields
+
+
+
+library
+  import:
+    deps
+  hs-source-dirs:
+    lib
+  exposed-modules:
+    Data.ByteString.Interned
+    Data.ByteString.Interned.Internal
 
 
 
@@ -79,12 +86,6 @@ test-suite properties
     -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:
     tests
-  default-language:
-    Haskell2010
-  default-extensions: BangPatterns
-                    , ScopedTypeVariables
-                    , TemplateHaskell
-                    , UnicodeSyntax
   build-depends: base
                , aeson
                , binary
@@ -102,6 +103,8 @@ test-suite properties
 
 
 benchmark BenchmarkBuilder
+  common:
+    deps
   build-depends: base
                , bytestring
                , containers
