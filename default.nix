@@ -1,7 +1,8 @@
 { mkDerivation, aeson, base, bimaps, binary, bytestring, cereal
 , cereal-text, compact, containers, criterion, deepseq, hashable
-, QuickCheck, stdenv, string-conversions, tasty, tasty-quickcheck
-, tasty-th, text, text-binary, utf8-string, vector-th-unbox
+, lens, QuickCheck, stdenv, string-conversions, tasty
+, tasty-quickcheck, tasty-th, text, text-binary, utf8-string
+, vector-th-unbox
 }:
 mkDerivation {
   pname = "InternedData";
@@ -9,12 +10,12 @@ mkDerivation {
   src = ./.;
   libraryHaskellDepends = [
     aeson base bimaps binary bytestring cereal cereal-text compact
-    deepseq hashable string-conversions text text-binary utf8-string
-    vector-th-unbox
+    deepseq hashable lens string-conversions text text-binary
+    utf8-string vector-th-unbox
   ];
   testHaskellDepends = [
-    aeson base binary cereal QuickCheck string-conversions tasty
-    tasty-quickcheck tasty-th
+    aeson base binary cereal lens QuickCheck string-conversions tasty
+    tasty-quickcheck tasty-th text
   ];
   benchmarkHaskellDepends = [
     base bytestring containers criterion deepseq text
