@@ -1,8 +1,8 @@
 cabal-version:  2.2
 name:           InternedData
 version:        0.0.0.1
-author:         Christian Hoener zu Siederdissen, 2017-2019
-copyright:      Christian Hoener zu Siederdissen, 2017-2019
+author:         Christian Hoener zu Siederdissen, 2017-2020
+copyright:      Christian Hoener zu Siederdissen, 2017-2020
 homepage:       https://github.com/choener/InternedData
 bug-reports:    https://github.com/choener/InternedData/issues
 maintainer:     choener@bioinf.uni-leipzig.de
@@ -11,7 +11,7 @@ license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
-tested-with:    GHC == 8.4.4
+tested-with:    GHC == 8.6.5
 synopsis:       Data interning (with compact regions where possible)
 description:
                 Interned (UTF8) @ByteString@s where the interned structure is
@@ -69,8 +69,6 @@ common deps
 library
   import:
     deps
-  hs-source-dirs:
-    lib
   exposed-modules:
     Data.ByteString.Interned
     Data.ByteString.Interned.Internal
@@ -97,8 +95,6 @@ test-suite properties
                , tasty                >= 0.11
                , tasty-quickcheck     >= 0.8
                , tasty-th             >= 0.1
-               --
-               , InternedData
 
 
 
@@ -111,8 +107,6 @@ benchmark BenchmarkBuilder
                , criterion                >= 1.0.2
                , deepseq
                , text
-               --
-               , InternedData
   hs-source-dirs:
     tests
   main-is:

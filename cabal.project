@@ -1,4 +1,7 @@
 packages: .
 
-optional-packages: ./*/*.cabal
+source-repository-package
+  type: git
+  location: https://github.com/choener/bimaps
+  tag: master
 
