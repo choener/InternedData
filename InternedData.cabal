@@ -76,6 +76,8 @@ library
 
 
 test-suite properties
+  common:
+    deps
   type:
     exitcode-stdio-1.0
   main-is:
