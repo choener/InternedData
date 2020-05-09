@@ -76,7 +76,7 @@ library
 
 
 test-suite properties
-  common:
+  import:
     deps
   type:
     exitcode-stdio-1.0
@@ -97,11 +97,12 @@ test-suite properties
                , tasty                >= 0.11
                , tasty-quickcheck     >= 0.8
                , tasty-th             >= 0.1
+               , InternedData
 
 
 
 benchmark BenchmarkBuilder
-  common:
+  import:
     deps
   build-depends: base
                , bytestring
@@ -109,6 +110,7 @@ benchmark BenchmarkBuilder
                , criterion                >= 1.0.2
                , deepseq
                , text
+               , InternedData
   hs-source-dirs:
     tests
   main-is:

@@ -14,11 +14,15 @@ mkDerivation {
     utf8-string vector-th-unbox
   ];
   testHaskellDepends = [
-    aeson base binary cereal lens QuickCheck string-conversions tasty
-    tasty-quickcheck tasty-th text
+    aeson base bimaps binary bytestring cereal cereal-text compact
+    deepseq hashable lens QuickCheck string-conversions tasty
+    tasty-quickcheck tasty-th text text-binary utf8-string
+    vector-th-unbox
   ];
   benchmarkHaskellDepends = [
-    base bytestring containers criterion deepseq text
+    aeson base bimaps binary bytestring cereal cereal-text compact
+    containers criterion deepseq hashable lens string-conversions text
+    text-binary utf8-string vector-th-unbox
   ];
   homepage = "https://github.com/choener/InternedData";
   description = "Data interning (with compact regions where possible)";
