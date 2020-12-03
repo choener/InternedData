@@ -73,6 +73,6 @@ ibsBimapLookupInt r = seq r . unsafeDupablePerformIO $ go <$> readIORef ibsBimap
   where go m = case (m `seq` lookupR m r) of
                  Just l  -> l
 #endif
-                 Nothing -> error "btiBimapLookupInt: totality assumption invalidated"
+                 Nothing -> error $ "btiBimapLookupInt: totality assumption invalidated" ++ show (r, m)
 {-# Inline ibsBimapLookupInt #-}
 
