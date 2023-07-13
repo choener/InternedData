@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, bimaps, binary, bytestring, cereal
 , cereal-text, compact, containers, criterion, deepseq, hashable
-, lens, QuickCheck, stdenv, string-conversions, tasty
+, lens, lib, QuickCheck, string-conversions, tasty
 , tasty-quickcheck, tasty-th, text, text-binary, utf8-string
 , vector-th-unbox
 }:
@@ -26,5 +26,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/choener/InternedData";
   description = "Data interning (with compact regions where possible)";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
